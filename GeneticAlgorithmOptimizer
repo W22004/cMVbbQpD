@@ -1,0 +1,60 @@
+"```
+import random
+
+class GeneticAlgorithmOptimizer():
+    def __init__(self, initial_population, fitness_function, mutation_rate=0.1, crossover_rate=0.9):
+        self.population = initial_population
+        self.fitness_function = fitness_function
+        self.mutation_rate = mutation_rate
+        self.crossover_rate = crossover_rate
+    
+    def roulette_wheel_selection(self):
+        max_fitness = sum([self.fitness_function(individual) for individual in self.population])
+        selection_probs = [self.fitness_function(individual) / max_fitness for individual in self.population]
+        return self.population[random.choices(range(len(self.population)), weights=selection_probs)[0]]
+    
+    def single_point_crossover(self, individual1, individual2):
+        if random.random() < self.crossover_rate:
+            crossover_point = random.randint(1, len(individual1) - 1)
+            return individual1[:crossover_point] + individual2[crossover_point:], individual2[:crossover_point] +
+                   individual1[crossover_point:]
+        else:
+            return individual1, individual2
+
+    def mutate(self, individual):
+        return [gene if random.random() > self.mutation_rate else random.choice(list(set(range(1, 101)) - {gene}))
+                for gene in individual]
+
+    def evolve(self):
+        new_population = []
+        while len(new_population) < len(self.population):
+            parent1 = self.roulette_wheel_selection()
+            parent2 = self.roulette_wheel_selection()
+            
+            offspring1, offspring2 = self.single_point_crossover(parent1, parent2)
+            
+            offspring1 = self.mutate(offspring1)
+            offspring2 = self.mutate(offspring2)
+            
+            new_population.extend([offspring1, offspring2])
+
+        self.population = new_population
+
+    def optimize(self, num_generations):
+        for _ in range(num_generations):
+            self.evolve()
+      return max(self.population, key=self.fitness_function)
+
+              
+initial_population = [[random.randint(1, 100) for _ in range(10)] for _ in range(50)]
+      
+def fitness_function(individual):
+    return sum(individual)
+      
+optimizer = GeneticAlgorithmOptimizer(initial_population, fitness_function)
+      
+best_individual = optimizer.optimize(100)
+print(best_individual)
+```
+
+带有华丽分割线："
